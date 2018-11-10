@@ -6,14 +6,11 @@ import os
 def index(request):
     if request.method =='POST':
         code = request.POST['code']
-        open('data/user_code.py', 'w').write(code)
-        os.system('python data/user_code.py 2> data/error.txt')
+        with open('data/user_code.py', 'w') as f: f.write(code)
+        os.system('python data/user_code.py > data/output.txt 2>&1')
 
-        f = open('data/error.txt', 'r').read()
-        if len(f) == 0:
-            os.system('python data/user_code.py > output.txt')
-            f = open('output.txt', 'r').read()
-        return render(request, 'index.html', {'code': code, 'output':f})
+        with open('data/output.txt', 'r') as f: content = f.read()
+        return render(request, 'index.html', {'code': code, 'output':content})
 
-    code = open('data/source_code.py', 'r').read()
-    return render(request, 'index.html', {'code':code})
+    with open('data/source_code.py', 'r') as f: content = f.read()
+    return render(request, 'index.html', {'code':content})
